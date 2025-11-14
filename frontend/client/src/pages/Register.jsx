@@ -48,11 +48,12 @@ export default function Register() {
     };
 
   return (
-    <div className="min-h-screen bg-[#1f1f1f] flex flex-col items-center justify-center text-[#d6d6d6] font-serif">
+    <div className="min-h-screen bg-[#1f1f1f] flex flex-col border border-gray-500 items-center justify-center text-[#d6d6d6] font-serif">
       <h1 className="text-4xl text-[#c6b88a] mb-12 pt-12">Register</h1>
 
-    <form onSubmit={handleRegister} className="flex flex-col gap-4 w-[300px] border-gray-800">
-        <label>Name</label>
+    <form 
+      onSubmit={handleRegister} 
+      className="border border-gray-600 p-10 rounded-md w-[400px] flex flex-col gap-5">
         <input
             type="text"
             placeholder="Enter name here..." 
@@ -61,7 +62,6 @@ export default function Register() {
             required
             className="p-2 bg-transparent border border-gray-600 rounded-md focus:outline-none focus:border-[#2eb4a2]"
                 />
-        <label>Email</label>
         <input
             type="text"
             placeholder="Enter email address here... "
@@ -70,7 +70,6 @@ export default function Register() {
             required
             className="p-2 bg-transparent border border-gray-600 rounded-md focus:outline-none focus:border-[#2eb4a2]"
         />
-        <label>Password</label>
         <input
             type="password"
             placeholder="Enter password here..."
@@ -79,7 +78,6 @@ export default function Register() {
             required
             className="p-2 bg-transparent border border-gray-600 rounded-md focus:outline-none focus:border-[#2eb4a2]"
         />
-        <label>I am a...</label>
         <select
             value={role}
             onChange={(e) => setRole(e.target.value)}

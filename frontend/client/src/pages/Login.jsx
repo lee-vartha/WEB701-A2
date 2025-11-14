@@ -48,8 +48,8 @@ export default function Login() {
 
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-dark text-accent">
-            <h1 className="text-4xl mb-10 font-serif">Login</h1>
+        <div className="min-h-screen bg-[#1f1f1f] flex flex-col border border-gray-500 items-center justify-center text-[#d6d6d6] font-serif">
+            <h1 className="text-4xl text-[#c6b88a] mb-12 pt-12">Login</h1>
             <form
                 onSubmit={handleSubmit}
                 className="border border-gray-600 p-10 rounded-md w-[400px] flex flex-col gap-5"
@@ -59,14 +59,14 @@ export default function Login() {
                     placeholder="Email Address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-[300px] p-2 bg-transparent border border-gray-600 rounded-md text-center"
+                    className="w-[320px] p-2 bg-transparent border border-gray-600 rounded-md text-center"
                 />
                 <input
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-[300px] p-2 bg-transparent border border-gray-600 rounded-md text-center"
+                    className="w-[320px] p-2 bg-transparent border border-gray-600 rounded-md text-center"
 
                 />
                 <button 
