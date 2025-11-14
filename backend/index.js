@@ -1,8 +1,11 @@
+require("dotenv").config();
+
+console.log("Groq key:", process.env.GROQ_API_KEY);
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
-dotenv.config();
+
+
 
 const app = express();
 
@@ -14,12 +17,16 @@ app.use(express.json());
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const tokenRoutes = require('./routes/tokenRoutes');
-// const userRoutes = require('./routes/userRoutes'); 
+const reservationRoutes = require('./routes/reservationRoutes');
+const userRoutes = require('./routes/userRoutes'); 
+const chatRoutes = require("./routes/chatRoute");
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/tokens', tokenRoutes);
-// app.use('/api/users', userRoutes); 
+app.use('/api/reservations', reservationRoutes);
+app.use('/api/users', userRoutes); 
+app.use("/api/chat", chatRoutes);
 
 // db connection
 mongoose

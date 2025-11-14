@@ -52,7 +52,13 @@ exports.register = async (req, res) => {
     // the user object contains the usual user details and these values will be sent so the client can use them as needed
     res.json({
         token: generateToken(user._id),
-        user: { id: user._id, name, email, role, tokenBalance: startingBalance}
+        user: { 
+            id: user._id, 
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            tokenBalance: startingBalance
+        },
     });
 };
 
@@ -61,7 +67,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     const {email, password} = req.body;
 
-
+    
     // finding the user by email
     const user = await User.findOne({email});
     // if theres not a user that matches the email then provide error
@@ -75,6 +81,22 @@ exports.login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     // if theres no match then the passwords incorrect and error is provided
     if (!match) return res.status(400).json({msg: "Invalid credentials"});
+
+    const now = new Date();
+    const lastLogin = user.LastLogin || new Date(0);
+
+    if (now.toDateString() !== lastLogin.toDateString()) {
+        user.tokens = (user.tokens || 0) + 1;
+    }
+
+    user.lastLogin = now;
+    await user.save();
+
+    const token = jwt.sign(
+        {id: user._id, role: user.role},
+        process.env.JWT_SECRET,
+        {expiresIn: "7d"}
+    );
 
     // otherwise, generate a token and send back user data except password
     // sends a json response to client

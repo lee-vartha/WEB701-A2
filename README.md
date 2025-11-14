@@ -1,8 +1,25 @@
-# TO START MERN - MongoDB, Express.js, REACT, Node.js
-1. cd WEB701-A2
-2. cd backend
-3. npm run dev
+# Late-Night Nosh - Full Stack MERN Website
+A charity meal-donation platform allowing donors to give surplus food and beneficiaries to reserve items using 'tokens'. Includes authentication, token transaction, interactive elements and an AI-powered support chatbot.
+
+# Tech Stack:
+- React + Tailwind + Framer Motion
+- Node.js + Express
+- MongoDB + Mongoose
+- JWT Authentication
+- Groq/OpenAI LLM for Chatbot
+
+# Features:
+- Secure register/login
+- Role-based dashboards
+- Token wallet
+- Product browsing & creation
+- AI Chatbot
+- Motion UI Transitions
+
+
+# SETUP
+1. cd backend
+2. npm run dev
 # [make new terminal]
-4. cd WEB701-A2
-5. cd frontend
-6. npm start
+3. cd frontend/client
+4. npm start

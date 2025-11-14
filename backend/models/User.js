@@ -6,8 +6,9 @@ const userSchema = new mongoose.Schema({
     name: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
-    role: {type: String, enum: ['donor', 'beneficiary'], required: true},
-    tokenBalance: {type: Number, default: 5},
+    role: {type: String, enum: ['donor', 'beneficiary', 'admin'], required: true, default: 'beneficiary'},
+    tokens: {type: Number, default: 5},
+    lastLogin: {type: Date},
 });
 
 // exporting the module so other files can use it

@@ -21,6 +21,27 @@ exports.earnTokens = async (req, res) => {
     }
 }
 
+
+exports.allocateTokens = async (req, res) => {
+    try {
+        const {userId, amount} = req.body;
+
+        if (!userId || !amount) {
+            return res.status(400).json({msg: 'User ID and token amount required'});
+        }
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({msg: 'User not found'});
+
+        user.tokens = (user.tokens || 0) + Number(amount);
+        await user.save();
+        res.json({msg: `Allocated ${amount} tokens to ${user.name}`, tokens: user.tokens});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({msg: 'Server error'});
+    }
+}
+
 // spending tokens
 exports.spendTokens = async (req, res) => {
     try {

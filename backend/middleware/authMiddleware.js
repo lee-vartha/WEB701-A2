@@ -29,4 +29,23 @@ const protect = async (req, res, next) => {
     }
 };
 
-module.exports = {protect}
+const authorize = (...roles) => {
+    return (req, res, next) => {
+        console.log("Authorize check => Roles allowed:", roles);
+        console.log("req.user data:", req.user);
+
+        if (!req.user) {
+            return res.status(401).json({msg: "Not authenticated. (authMiddleware.js)"});
+        }
+
+        if (!roles.includes(req.user.role)) {
+            console.log("Access denied -> user role:", req.user.role);
+            return res.status(403).json({msg: "Access denied."});
+        }
+
+        next();
+        console.log("Authorized user:", req.user);
+    }
+}
+
+module.exports = {protect, authorize}
