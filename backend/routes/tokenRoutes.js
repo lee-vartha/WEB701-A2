@@ -8,6 +8,8 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 const Reservation = require('../models/Reservation');
+const Product = require('../models/Product');
+
 // posting to earn and spend token routes
 router.post('/earn', protect, earnTokens);
 router.post('/spend', protect, spendTokens);

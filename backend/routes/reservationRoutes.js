@@ -3,6 +3,7 @@ const router = express.Router();
 const {protect, authorize} = require('../middleware/authMiddleware');
 const {createReservation, getReservations} = require('../controllers/reservationController');
 const Reservation = require('../models/Reservation');
+const Product = require('../models/Product');
 
 router.post('/', protect, createReservation);
 router.get('/', protect, getReservations);
