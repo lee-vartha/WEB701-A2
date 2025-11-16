@@ -1,6 +1,5 @@
 require("dotenv").config();
 
-console.log("Groq key:", process.env.GROQ_API_KEY);
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');

@@ -1,11 +1,10 @@
 import React, {useContext, useEffect, useState} from "react";
 import {AuthContext} from "../context/AuthContext";
 import {useNavigate} from "react-router-dom";
-import { set } from "mongoose";
 import { useChatbotError } from "../components/ChatbotProvider";
 
 export default function Profile() {
-    const {username, role, tokenBalance, setTokenBalance} = useContext(AuthContext);
+    const {tokenBalance, setTokenBalance} = useContext(AuthContext);
     const navigate = useNavigate();
     const [tokenStreak, setTokenStreak] = useState(0);
     const [reservations, setReservations] = useState([]);
@@ -36,6 +35,7 @@ export default function Profile() {
             }
         };
         fetchUserProfile();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -64,6 +64,7 @@ export default function Profile() {
             }
         };
         fetchReservations();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSignout = () => {

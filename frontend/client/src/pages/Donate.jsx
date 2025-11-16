@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import {AuthContext} from "../context/AuthContext";
 import Toast from "../components/Toast";
-import QrReader from "react-qr-reader-es6";
+import QrReader from "react-qr-scanner";
 import {motion, AnimatePresence} from "framer-motion";
 import { useChatbotError } from "../components/ChatbotProvider";
 
@@ -73,6 +73,8 @@ export default function Donate() {
 
     useEffect(() => {
         fetchReservations();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+
     }, [userId]);
 
 
@@ -248,8 +250,14 @@ export default function Donate() {
                                             <QrReader
                                                 delay={200}
                                                 onError={handleError}
+                                                videoStyle={{willReadFrequently: true}}
                                                 onScan={(data) => handleScan(data, scanTargetId)}
                                                 style={{width: "260px"}}
+                                                constraint={{
+                                                    video: {
+                                                        facingMode: {ideal: "environment"},
+                                                    }
+                                                }}
                                             ></QrReader>
 
                                             <button

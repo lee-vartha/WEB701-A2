@@ -44,7 +44,6 @@ const authorize = (...roles) => {
         }
 
         next();
-        console.log("Authorized user:", req.user);
     }
 }
 
