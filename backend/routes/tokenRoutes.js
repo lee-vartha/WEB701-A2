@@ -14,7 +14,7 @@ router.post('/spend', protect, spendTokens);
 router.post('/allocate', protect, authorize('admin'), allocateTokens);
 
 
-router.post("/accept", authorize("donor"), async (req, res) => {
+router.post("/accept", protect, authorize("donor"), async (req, res) => {
     try {
         const {ticketId} = req.body;
 

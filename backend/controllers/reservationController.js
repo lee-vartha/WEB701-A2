@@ -56,6 +56,7 @@ exports.createReservation = async (req, res) => {
             message: "Reserved",
             reservation: reservation[0],
             ticketId: reservation[0].ticketId,
+            userId: req.user.id,
             expiresOn: reservation[0].expiresOn,
             updatedTokens: user.tokens - cost
         });

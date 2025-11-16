@@ -134,6 +134,7 @@ export default function BrowseMeals() {
 
                 const reservation = {
                     ticketId: data.ticketId,
+                    userId: data.userId,
                     expiresOn: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
                 };
                 setActiveReservation(reservation);
@@ -290,7 +291,7 @@ export default function BrowseMeals() {
 
                         <div className="mx-auto bg-white p-3 rounded-lg shadow-inner w-fit">
                             <QRCodeCanvas
-                                value={JSON.stringify({ticketId: activeReservation.ticketId})}
+                                value={JSON.stringify({ticketId: activeReservation.ticketId, userId: activeReservation.userId})}
                                 size={220}
                                 bgColor="#ffffff"
                                 fgColor="#000000"

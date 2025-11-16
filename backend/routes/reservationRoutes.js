@@ -7,7 +7,7 @@ const Reservation = require('../models/Reservation');
 router.post('/', protect, createReservation);
 router.get('/', protect, getReservations);
 
-router.post("/reserve", authorize, async (req, res) => {
+router.post("/reserve", protect, authorize, async (req, res) => {
     try {
         const {productId} = req.body;
         const product = await Product.findById(productId);

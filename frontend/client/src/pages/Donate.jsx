@@ -98,11 +98,13 @@ export default function Donate() {
     setToastMsg(result.msg);
     };
 
-   const handleScan = (data, expectedTicketId) => {
-        if (!data) return; 
+   const handleScan = (scanResult, expectedTicketId) => {
+        if (!scanResult || !scanResult.text) return;
+
+        let raw = scanResult.text;
         let parsed;
         try {
-            parsed = JSON.parse(data);
+            parsed = JSON.parse(raw);
         } catch {
             setToastMsg("Invalid QR");
             return;
@@ -112,7 +114,7 @@ export default function Donate() {
             setToastMsg("This QR code doesn't match the reservation");
             return
         }
-            sendToBackend(JSON.parse(data));
+            sendToBackend(parsed);
             fetchReservations();
             setShowScanner(false);
     };
