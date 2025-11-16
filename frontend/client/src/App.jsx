@@ -11,10 +11,12 @@ import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import AdminDashboard from './pages/AdminDashboard'
 import Chatbot from "./components/Chatbot"
+import ChatbotProvider from './components/ChatbotProvider';
 import './App.css';
 
 function App() {
   return (
+    <ChatbotProvider>
     <Router>
       <div className="app">
         <Navbar />
@@ -28,10 +30,12 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
-        <Chatbot />
         <Footer />
       </div>
     </Router>
+
+    <Chatbot />
+    </ChatbotProvider>
   );
 }
 

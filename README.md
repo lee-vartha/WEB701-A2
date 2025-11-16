@@ -20,6 +20,6 @@ A charity meal-donation platform allowing donors to give surplus food and benefi
 # SETUP
 1. cd backend
 2. npm run dev
-# [make new terminal]
+[make new terminal]
 3. cd frontend/client
 4. npm start

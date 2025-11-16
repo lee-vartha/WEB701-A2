@@ -2,6 +2,7 @@ import React, {useState, useContext} from "react";
 import {useNavigate} from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Toast from "../components/Toast";
+import { useChatbotError } from "../components/ChatbotProvider";
 
 
 export default function Login() {
@@ -10,6 +11,7 @@ export default function Login() {
     const [toastMsg, setToastMsg] = useState("")
     const { setIsLoggedIn, setUsername, setRole} = useContext(AuthContext);
     const navigate = useNavigate();
+    const {sendErrorToChat} = useChatbotError();
     
     const API = "http://localhost:5000/api/auth";
 
@@ -40,16 +42,18 @@ export default function Login() {
                 
             } else {
                 setToastMsg(data.message || "Invalid credentials");
+                sendErrorToChat("User either got their email or password incorrect");
             }
         } catch (err) {
             setToastMsg("Server error. Please try again");
+            sendErrorToChat("Server error had occured");
         }
     };
 
 
     return (
         <div className="min-h-screen bg-[#1f1f1f] flex flex-col border border-gray-500 items-center justify-center text-[#d6d6d6] font-serif">
-            <h1 className="text-4xl text-[#c6b88a] mb-12 pt-12">Login</h1>
+            <h1 className="text-4xl text-[#c6b88a] mb-12">Login</h1>
             <form
                 onSubmit={handleSubmit}
                 className="border border-gray-600 p-10 rounded-md w-[400px] flex flex-col gap-5"

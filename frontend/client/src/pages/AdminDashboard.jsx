@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Toast from "../components/Toast";
+import { useChatbotError } from "../components/ChatbotProvider";
 
 export default function AdminDashboard() {
     const token = localStorage.getItem('token');
@@ -8,6 +9,7 @@ export default function AdminDashboard() {
     const [toastMsg, setToastMsg] = useState("");
     const [tokenAmount, setTokenAmount] = useState(0);
     const [selectedUser, setSelectedUser] = useState("");
+    const {sendErrorToChat} = useChatbotError();
 
     const API_BASE = "http://localhost:5000/api";
 
@@ -42,7 +44,12 @@ export default function AdminDashboard() {
             fetchUsers();
         } else {
             const data = await res.json();
-            setToastMsg(data.msg || "Failed to delete meal");
+            setToastMsg(data.msg || "Failed to delete user");
+
+            sendErrorToChat(
+                data.msg || "Deleting a user failed. This can happen if the user no longer exists of your admin session has expired."
+            );
+            
         }
     };
 
@@ -57,6 +64,11 @@ export default function AdminDashboard() {
         } else {
             const data = await res.json();
             setToastMsg(data.msg || "Failed to delete product");
+
+            sendErrorToChat(
+                data.msg || "Deleting a product failed. This can occur if the meal was already removed or your admin permissions are invalid"
+            );
+
         }
     };
 
@@ -76,7 +88,14 @@ export default function AdminDashboard() {
             setTokenAmount(0);
             setSelectedUser("");
             fetchUsers();
-        } else setToastMsg(data.msg || "Error allocating tokens");
+        } else {
+            setToastMsg(data.msg || "Error allocating tokens");
+
+            sendErrorToChat(
+                data.msg || "This can happen when the user ID is invalid or the server could not update their token balance"
+            );
+
+        }
 
     };
 

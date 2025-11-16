@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from "react";
 import {AuthContext} from "../context/AuthContext";
 import {useNavigate} from "react-router-dom";
 import { set } from "mongoose";
+import { useChatbotError } from "../components/ChatbotProvider";
 
 export default function Profile() {
     const {username, role, tokenBalance, setTokenBalance} = useContext(AuthContext);
@@ -10,6 +11,7 @@ export default function Profile() {
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const {sendErrorToChat} = useChatbotError();
 
     const API_RESERVATIONS = "http://localhost:5000/api/reservations";
     const API_USER = "http://localhost:5000/api/auth/me";
@@ -56,6 +58,7 @@ export default function Profile() {
             } catch (err) {
                 console.error("Error fetching reservations:", err);
                 setError("Server error. Please try again later.");
+                sendErrorToChat("An issue happened with the server");
             } finally {
                 setLoading(false);
             }

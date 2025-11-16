@@ -21,53 +21,54 @@ exports.createReservation = async (req, res) => {
         }
 
         const cost = product.tokens || 1;
-        if ((user.tokens || 0) < cost) {
+        if (user.tokens < cost)
             return res.status(400).json({message: 'Not enough tokens'});
-        }
 
-        if (user.role !== "beneficiary") {
-        return res.status(403).json({msg: "Donors cannot reserve meals"});
-}
-        
         const session = await mongoose.startSession();
-        let reservation; 
-        await session.withTransaction(async () => {
-            const updatedUser = await User.findOneAndUpdate(
-                {_id: userId, tokens: {$gte: cost}},
-                {$inc: {tokens: -cost}},
-                {new: true, session}
-            );
-            if (!updatedUser) throw new Error('Not enough tokens');
+        let reservation;
 
-            const updatedProduct = await Product.findOneAndUpdate(
-                {_id: productId, status: 'active'},
-                {status: 'reserved', reservedBy: userId},
+        await session.withTransaction(async () => {
+            await User.findByIdAndUpdate(
+                userId,
+                { $inc: {tokens: -cost}},
                 {new: true, session}
             );
-            if (!updatedProduct) throw new Error('Meal not available');
+
+            await Product.findByIdAndUpdate(
+                productId,
+                {status: "reserved", reservedBy: userId},
+                {new: true, session}
+            );
             
             reservation = await Reservation.create([{
-                product: productId,
-                beneficiary: userId,
-                tokensUsed: cost,
-                expiresAt: null
-            }], {session});
+            userId,
+            productId,
+            ticketId: new mongoose.Types.ObjectId().toString(),
+            tokensUsed: cost,
+            expiresOn: Date.now() + 15 * 60 * 1000,
+        }], {session});
+
         });
 
         session.endSession();
-        user.tokens -= product.tokens;
-        await user.save();
 
-        return res.status(201).json({message: "Reserved", reservation: reservation[0], updatedTokens: user.tokens});
+        res.status(201).json({
+            message: "Reserved",
+            reservation: reservation[0],
+            ticketId: reservation[0].ticketId,
+            expiresOn: reservation[0].expiresOn,
+            updatedTokens: user.tokens - cost
+        });
+
     } catch (err) {
-        return res.status(400).json({message: err.message || "Reservation failed"});
+        res.status(500).json({msg: err.message});
     }
 };
 
 exports.getReservations = async (req, res) => {
     try {
-        const list = await Reservation.find({beneficiary: req.user.id})
-        .populate('product', 'name vendor tokens status')
+        const list = await Reservation.find({userId: req.user.id})
+        .populate('productId', 'name vendor tokens status')
         .sort('-createdAt');
         res.json(list);
     } catch (err) {

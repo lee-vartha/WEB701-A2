@@ -20,7 +20,7 @@ export default function Toast({message, onClose}) {
             animate={{opacity: 1, y: 0, scale:1}}
             exit={{opacity: 0, y:40, scale: 0.95}}
             transition={{duration: 0.3, ease: "easeOut"}}
-            className="fixed bottom-5 flex items-center w-full max-w-xs p-4 text-gray-500 bg-[#1f1f1f] border border-gray-700 rounded-lg shadow-lg"
+            className="fixed bottom-5 inset-x-0 mx-auto z-[9999] flex items-center w-full max-w-xs p-4 text-gray-500 bg-[#1f1f1f] border border-gray-700 rounded-lg shadow-lg"
             role="alert"
         >
             <div className="inline-flex items-center justify-center shrink-0 w-8 h-8 text-[#2eb4a2] bg-teal-100 rounded-lg dark:bg-teal-900 dark:text-teal-200">

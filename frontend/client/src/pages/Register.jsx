@@ -2,6 +2,7 @@ import React, {useContext, useState} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Toast from "../components/Toast";
+import { useChatbotError } from "../components/ChatbotProvider";
 
 export default function Register() {
     const [name, setName] = useState("");
@@ -11,6 +12,8 @@ export default function Register() {
     const [toastMsg, setToastMsg] = useState("");
     const {setIsLoggedIn, setUsername} = useContext(AuthContext);
     const navigate = useNavigate();
+    const {sendErrorToChat} = useChatbotError();
+    
     const API = "http://localhost:5000/api/auth";
     
     const handleRegister = async (e) => {
@@ -41,16 +44,17 @@ export default function Register() {
                 }, 1500);
             } else {
                 setToastMsg(data.message || "Register failed. Try again");
+                sendErrorToChat("An attempt to register into the system failed");
             }
         } catch (err) {
             setToastMsg("Server error. Please try again later.")
+            sendErrorToChat("Server error occured");
         }
     };
 
   return (
     <div className="min-h-screen bg-[#1f1f1f] flex flex-col border border-gray-500 items-center justify-center text-[#d6d6d6] font-serif">
-      <h1 className="text-4xl text-[#c6b88a] mb-12 pt-12">Register</h1>
-
+      <h1 className="text-4xl text-[#c6b88a] mb-12">Register</h1>
     <form 
       onSubmit={handleRegister} 
       className="border border-gray-600 p-10 rounded-md w-[400px] flex flex-col gap-5">
@@ -62,8 +66,7 @@ export default function Register() {
             required
             className="p-2 bg-transparent border border-gray-600 rounded-md focus:outline-none focus:border-[#2eb4a2]"
                 />
-        <input
-            type="text"
+        <input type="text"
             placeholder="Enter email address here... "
             value={email}
             onChange={(e) => setEmail(e.target.value)}

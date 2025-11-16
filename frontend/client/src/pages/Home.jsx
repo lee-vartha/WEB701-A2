@@ -34,9 +34,9 @@ export default function Home() {
                     aria-hidden="true"
                     className="
                     pointer-events-none select-none
-                    absolute right-[7vw]    /* horizontal position */
-                    top-1/2                /* anchor to mid-height of section */
-                    -translate-y-[28%]     /* nudge upward to align with headline */
+                    absolute right-[7vw]   
+                    top-1/2                
+                    -translate-y-[28%]   
                     w-[34vw] max-w-[360px] min-w-[260px] h-auto opacity-90
                     hidden md:block
                     "

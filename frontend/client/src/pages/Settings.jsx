@@ -1,6 +1,7 @@
 import React, {useContext, useState} from "react";
 import {AuthContext} from "../context/AuthContext";
 import Toast from "../components/Toast";
+import { useChatbotError } from "../components/ChatbotProvider";
 
 export default function Settings() {
     const {user} = useContext(AuthContext);
@@ -11,6 +12,7 @@ export default function Settings() {
         password: "",
     });
     const [toastMsg, setToastMsg] = useState("");
+    const {sendErrorToChat} = useChatbotError();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value});
@@ -34,9 +36,13 @@ export default function Settings() {
                 setFormData({ ...formData, password: ""});
             } else {
                 setToastMsg(data.msg || "Failed to update profile");
+                sendErrorToChat("A failure to update the profile");
+
             }
         } catch {
             setToastMsg("Server error. Try again later");
+            sendErrorToChat("Server error occured");
+
         }
     };
 

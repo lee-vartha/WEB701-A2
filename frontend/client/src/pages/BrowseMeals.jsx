@@ -1,6 +1,9 @@
 import React, {useContext, useEffect, useState} from "react";
 import { AuthContext } from "../context/AuthContext";
 import Toast from "../components/Toast"
+import {QRCodeCanvas} from "qrcode.react";
+import {motion, AnimatePresence} from "framer-motion";
+import { useChatbotError } from "../components/ChatbotProvider";
 
 
 export default function BrowseMeals() {
@@ -10,8 +13,28 @@ export default function BrowseMeals() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("All");
 
+    const [activeReservation, setActiveReservation] = useState(null);
+    const [showQRModal, setShowQRModal] = useState(false);
+    const [timeLeft, setTimeLeft] = useState("");
+
+    const {sendErrorToChat} = useChatbotError();
+
     const API = "http://localhost:5000/api/products";
     const API_RESERVATIONS = "http://localhost:5000/api/reservations";
+
+    useEffect(() => {
+        const saved = localStorage.getItem("activeReservation");
+
+        if (saved) {
+            const parsed = JSON.parse(saved);
+
+            if (new Date(parsed.expiresOn) > new Date()) {
+                setActiveReservation(parsed);
+            } else {
+                localStorage.removeItem("activeReservation");
+            }
+        }
+    }, []);
 
     useEffect(() => {
         const fetchMeals = async () => {
@@ -29,20 +52,59 @@ export default function BrowseMeals() {
             }
             } catch (err) {
                 console.error("Error fetching meals: ", err);
+                sendErrorToChat("Error fetching meals");
                 setMeals([]);
+
             }
         };
         fetchMeals();
     }, []);
 
+    useEffect(() => {
+        if (!activeReservation) return;
+
+        const interval = setInterval(() => {
+            const now = new Date();
+            const expiry = new Date(activeReservation.expiresOn);
+            const diff = expiry - now;
+
+            if (diff <= 0) {
+                setTimeLeft("Expired")
+                localStorage.removeItem("activeReservation");
+                setActiveReservation(null);
+                setShowQRModal(false);
+                setToastMsg("Your reservation has expired");
+
+                clearInterval(interval);
+                return;
+            }
+
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            setTimeLeft(`${minutes}m ${seconds}s`);
+
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [activeReservation]);
+
+
     const handleReserve = async (mealId, mealName) => {
+        if (activeReservation) {
+            setToastMsg("You already have an active reservation!");
+            return;
+        }
+        
         if (!isLoggedIn) {
             setToastMsg("Please login as a beneficiary to reserve a meal");
+            sendErrorToChat("User attempted reservation while not logged in");
             return;
         }
 
         if (role === "donor") {
             setToastMsg("Donors cannot reserve meals.");
+            sendErrorToChat("Donor attempted to reserve a meal");
             return;
         }
 
@@ -70,11 +132,24 @@ export default function BrowseMeals() {
                     : meal));
                 setToastMsg(`You have reserved "${mealName}".`);
 
+                const reservation = {
+                    ticketId: data.ticketId,
+                    expiresOn: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+                };
+                setActiveReservation(reservation);
+                localStorage.setItem(
+                    "activeReservation",
+                    JSON.stringify(reservation)
+                );
             } else {
                 setToastMsg(data.message || "Could not reserve meal");
+                sendErrorToChat("Beneficiary tried reserving a meal but couldn't");
+
             }
         } catch {
             setToastMsg("Server error. Please try again later.");
+            sendErrorToChat("Server error occured");
+
         }
     };
 
@@ -177,6 +252,65 @@ export default function BrowseMeals() {
                     </div>
                 ))}
             </div>
+
+            {activeReservation && timeLeft !== "Expired" &&  (
+                <div className="fixed bottom-6 left-6 z-[2000]">
+                    <button
+                        onClick={() => setShowQRModal(true)}
+                        className="bg-[#2eb4a2] text-black px-4 py-2 rounded-lg shadow-lg hover:scale-105 transition font-semibold"
+                    >
+                        QR C0DE
+                        <span className="ml-2 text-sm text-gray-800">
+                            {timeLeft}
+                        </span>
+                    </button>
+                </div>
+            )}
+
+            <AnimatePresence>
+                {showQRModal && (
+                    <motion.div
+                        initial={{opacity: 0}}
+                        animate={{opacity: 1}}
+                        exit={{opacity: 0}}
+                        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+                        onDirectionLock={() => setShowQRModal(false)}
+                    >
+                        <motion.div
+                            initial={{opacity: 0, scale: 0.8}}
+                            animate={{opacity: 1, scale: 1}}
+                            exit={{opacity: 0, scale: 0.8}}
+                            transition={{duration: 0.25}}
+                            className="bg-[#242424] p-8 rounded-xl shadow-2xl text-center border border-gray-700 w-[320px]"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <h2 className="text-lg text-[#2eb4a2] font-semibold mb-4">
+                                Show this QR code to the donor
+                            </h2>
+
+                        <div className="mx-auto bg-white p-3 rounded-lg shadow-inner w-fit">
+                            <QRCodeCanvas
+                                value={JSON.stringify({ticketId: activeReservation.ticketId})}
+                                size={220}
+                                bgColor="#ffffff"
+                                fgColor="#000000"
+                            ></QRCodeCanvas>
+                        </div>
+
+                            <p className="mt-5 text-sm text-gray-300">
+                                Expires in: <span className="font-semibold">{timeLeft}</span>
+                            </p>
+
+                            <button
+                                onClick={() => setShowQRModal(false)}
+                                className="mt-6 bg-[#2eb4a2] text-black px-4 py-2 rounded-lg hover:scale-105 transition"
+                            >
+                                    Close
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {toastMsg && <Toast message={toastMsg} onClose={() => setToastMsg("")} />}
         </div>
